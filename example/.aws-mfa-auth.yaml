@@ -1,0 +1,10 @@
+accounts:
+  - name: aaaa-account
+    region: us-east-1
+    access_key: aaaaaaaaaaaaa
+    secret_key: aaaaaaaaaaaaaaaaaaaaaaaaa
+  - name: bbbbb-account
+    region: us-east-1
+    access_key: bbbbbbbbbbbbb
+    secret_key: bbbbbbbbbbbbbbbbbbbbbbbbb
+

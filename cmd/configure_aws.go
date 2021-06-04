@@ -36,12 +36,17 @@ func ConfigureAws() {
 	awsConfigPath := awsDir + "/config"
 	awsCredentialsPath := awsDir + "/credentials"
 
+	os.Remove(awsConfigPath)
+	os.Remove(awsCredentialsPath)
+
 	awsConfigFile, err := os.OpenFile(awsConfigPath, os.O_CREATE|os.O_WRONLY, 0600)
 	cobra.CheckErr(err)
+	defer awsConfigFile.Close()
 	awsConfigFile.WriteString("")
 
 	awsCredentialsFile, err := os.OpenFile(awsCredentialsPath, os.O_CREATE|os.O_WRONLY, 0600)
 	cobra.CheckErr(err)
+	defer awsCredentialsFile.Close()
 	awsCredentialsFile.WriteString("")
 
 	for _, a := range c.Accounts {

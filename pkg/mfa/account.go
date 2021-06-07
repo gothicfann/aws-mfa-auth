@@ -14,8 +14,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// mfaSuffix is suffix for MFAd aws profiles in shared credentials files
 const mfaSuffix = "mfa"
 
+// Account is aws account abstract object definition
 type Account struct {
 	Name         string `yaml:"name"`
 	Region       string `yaml:"region"`
@@ -26,6 +28,7 @@ type Account struct {
 	MFASerial    string
 }
 
+// CreateSession creates new AWS session
 func (a *Account) CreateSession() *session.Session {
 	s, err := session.NewSession(&aws.Config{
 		Region: aws.String(a.Region),
@@ -39,6 +42,7 @@ func (a *Account) CreateSession() *session.Session {
 	return s
 }
 
+// GetCurrentUserName determines current aws UserName
 func (a *Account) GetCurrentUserName(s *session.Session) *string {
 	svc := iam.New(s)
 	var userInput *iam.GetUserInput
@@ -47,6 +51,7 @@ func (a *Account) GetCurrentUserName(s *session.Session) *string {
 	return userOutput.User.UserName
 }
 
+// GetMFADeviceSerial tries to get serial number of mfa device if configured
 func (a *Account) GetMFADeviceSerial(s *session.Session) {
 	svc := iam.New(s)
 	mfaInput := iam.ListMFADevicesInput{UserName: a.GetCurrentUserName(s)}
@@ -57,6 +62,7 @@ func (a *Account) GetMFADeviceSerial(s *session.Session) {
 	}
 }
 
+// GetTempCredentials gets temporary credentials for aws account and modifies its fields accordingly
 func (a *Account) GetTempCredentials(s *session.Session, mfaSerial *string, durationSeconds int64, passCode string) {
 	svc := sts.New(s)
 	if passCode == "" {
@@ -93,6 +99,7 @@ func (a *Account) PrintEnv() {
 	fmt.Println()
 }
 
+// SprintEnv string prints Account in non-MFAd env format
 func (a *Account) SprintEnv() string {
 	s := fmt.Sprintf("# %s\n", a.Name)
 	s += fmt.Sprintf("AWS_REGION=%s\n", a.Region)
@@ -112,6 +119,7 @@ func (a *Account) PrintMFAdEnv() {
 	fmt.Println()
 }
 
+// SprintMFAdEnv string prints Account in MFAd env format
 func (a *Account) SprintMFAdEnv() string {
 	s := fmt.Sprintf("# %s \n", a.Name)
 	s += fmt.Sprintf("AWS_REGION=%s\n", a.Region)
@@ -129,6 +137,7 @@ func (a *Account) PrintAwsRegion() {
 	fmt.Println()
 }
 
+// SprintAwsRegion string prints Account in non-MFAd aws format for aws config file
 func (a *Account) SprintAwsRegion() string {
 	s := fmt.Sprintf("[%s]\n", a.Name)
 	s += fmt.Sprintf("region = %s\n", a.Region)
@@ -144,6 +153,7 @@ func (a *Account) PrintAws() {
 	fmt.Println()
 }
 
+// SprintAws string prints Account in non-MFAd aws format for aws config file
 func (a *Account) SprintAws() string {
 	s := fmt.Sprintf("[%s]\n", a.Name)
 	s += fmt.Sprintf("aws_access_key_id = %s\n", a.AccessKey)
@@ -159,6 +169,7 @@ func (a *Account) PrintMFAdAwsRegion() {
 	fmt.Println()
 }
 
+// SprintMFAdAwsRegion string prints Account in MFAd aws format for aws config file
 func (a *Account) SprintMFAdAwsRegion() string {
 	s := fmt.Sprintf("[%s-%s]\n", a.Name, mfaSuffix)
 	s += fmt.Sprintf("region = %s\n", a.Region)
@@ -175,6 +186,7 @@ func (a *Account) PrintMFAdAws() {
 	fmt.Println()
 }
 
+// SprintMFAdAws string prints Account in MFAd aws format for aws credentials file
 func (a *Account) SprintMFAdAws() string {
 	s := fmt.Sprintf("[%s-%s]\n", a.Name, mfaSuffix)
 	s += fmt.Sprintf("aws_access_key_id = %s\n", a.AccessKey)

@@ -57,16 +57,18 @@ func (a *Account) GetMFADeviceSerial(s *session.Session) {
 	}
 }
 
-func (a *Account) GetTempCredentials(s *session.Session, mfaSerial *string, durationSeconds int64) {
+func (a *Account) GetTempCredentials(s *session.Session, mfaSerial *string, durationSeconds int64, passCode string) {
 	svc := sts.New(s)
-	fmt.Printf("Enter one-time passcode for \"%s\" account: ", a.Name)
-	in := bufio.NewScanner(os.Stdin)
-	in.Scan()
-	tokenCode := in.Text()
+	if passCode == "" {
+		fmt.Printf("Enter one-time passcode for \"%s\" account: ", a.Name)
+		in := bufio.NewScanner(os.Stdin)
+		in.Scan()
+		passCode = in.Text()
+	}
 	sessionTokenInput := sts.GetSessionTokenInput{
 		DurationSeconds: &durationSeconds,
 		SerialNumber:    mfaSerial,
-		TokenCode:       &tokenCode,
+		TokenCode:       &passCode,
 	}
 	sessionTokenOutput, err := svc.GetSessionToken(&sessionTokenInput)
 	cobra.CheckErr(err)

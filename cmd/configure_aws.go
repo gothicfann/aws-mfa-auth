@@ -55,7 +55,7 @@ func ConfigureAws() {
 		s := a.CreateSession()
 		a.GetMFADeviceSerial(s)
 		if a.MFASerial != "" {
-			a.GetTempCredentials(s, &a.MFASerial, durationSeconds)
+			a.GetTempCredentials(s, &a.MFASerial, durationSeconds, passCode)
 			awsCredentialsFile.WriteString(a.SprintMFAdAws())
 			awsConfigFile.WriteString(a.SprintMFAdAwsRegion())
 		}

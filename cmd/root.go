@@ -10,6 +10,7 @@ var (
 	durationSeconds int64
 	account         string
 	format          string
+	passCode        string
 )
 var rootCmd = &cobra.Command{
 	Use:   "aws-mfa-auth",

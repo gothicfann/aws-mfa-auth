@@ -20,6 +20,7 @@ func init() {
 	generateCmd.Flags().Int64VarP(&durationSeconds, "durationSeconds", "d", 43200, "temporary credentials expiration time in seconds")
 	generateCmd.Flags().StringVarP(&account, "account", "a", "", "generate temporary credentials for specific account (by default command will generate credentials for all accounts)")
 	generateCmd.Flags().StringVarP(&format, "format", "f", "env", "output format, can be \"env\", \"aws\"")
+	generateCmd.Flags().StringVarP(&passCode, "passCode", "p", "", "one-time passcode (tool will ask if not specified)")
 }
 
 func CheckFormat(format string) {
@@ -43,7 +44,7 @@ func Generate() {
 			s := a.CreateSession()
 			a.GetMFADeviceSerial(s)
 			if a.MFASerial != "" {
-				a.GetTempCredentials(s, &a.MFASerial, durationSeconds)
+				a.GetTempCredentials(s, &a.MFASerial, durationSeconds, passCode)
 				a.Print(format)
 			} else {
 				fmt.Println("MFA not configured for account:", a.Name)
@@ -57,7 +58,7 @@ func Generate() {
 				s := a.CreateSession()
 				a.GetMFADeviceSerial(s)
 				if a.MFASerial != "" {
-					a.GetTempCredentials(s, &a.MFASerial, durationSeconds)
+					a.GetTempCredentials(s, &a.MFASerial, durationSeconds, passCode)
 					a.Print(format)
 				} else {
 					fmt.Println("MFA not configured for account:", a.Name)
